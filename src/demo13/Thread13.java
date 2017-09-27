@@ -1,16 +1,28 @@
 package demo13;
 
-import java.util.concurrent.Semaphore;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Created by Ryan_Garfield on 9/27/17.
  */
 public class Thread13 {
     public static void main(String[] args) throws Exception{
-        Semaphore sem = new Semaphore(1);
 
-        sem.acquire();
+        ExecutorService executor = Executors.newCachedThreadPool();
 
-        System.out.println("Avaiable permits: " + sem.availablePermits());
+        for (int i = 0; i < 200; i++) {
+            executor.submit(new Runnable() {
+                @Override
+                public void run() {
+                    Connection.getInstance().connect();
+                }
+            });
+        }
+
+        executor.shutdown();
+
+        executor.awaitTermination(1, TimeUnit.DAYS);
     }
 }
